@@ -384,12 +384,12 @@ export default function ChatPage() {
 
     try {
 
-      await axios.delete(API_CONFIG.ENDPOINTS.SESSION_DETAIL(sessionId), {
+      await axios.delete(API_CONFIG.ENDPOINTS.SESSION_DETAIL(sessionToDelete), {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setSessions(prev => prev.filter(s => s.id !== sessionId));
+      setSessions(prev => prev.filter(s => s.id !== sessionToDelete));
       
-      if (currentSession?.id === sessionId) {
+      if (currentSession?.id === sessionToDelete) {
 
         startNewSession();
       }
