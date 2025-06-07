@@ -4,7 +4,8 @@ from .views import (
     RegisterView, 
     ChatHistoryAPIView, 
     ChatSessionListView, 
-    ChatSessionDetailView
+    ChatSessionDetailView,
+    ChatSessionTruncateView
 )
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
@@ -18,4 +19,5 @@ urlpatterns = [
     # New session-based endpoints
     path('sessions/', ChatSessionListView.as_view(), name='chat-sessions'),
     path('sessions/<int:session_id>/', ChatSessionDetailView.as_view(), name='chat-session-detail'),
+    path('sessions/<int:session_id>/truncate/', ChatSessionTruncateView.as_view(), name='chat-session-truncate'),
 ]
