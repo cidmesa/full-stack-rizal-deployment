@@ -7,7 +7,6 @@ interface TextFieldProps {
   type?: string;
   onChange: (value: string) => void;
   error?: string;
-  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 export default function TextField({
@@ -16,7 +15,6 @@ export default function TextField({
   type = "text",
   onChange,
   error,
-  onKeyDown,
 }: TextFieldProps) {
   const [showPassword, setShowPassword] = useState(false);
   const isPassword = type === "password";
@@ -33,7 +31,6 @@ export default function TextField({
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        onKeyDown={onKeyDown}
         className={`
           w-full
           p-3

@@ -1,7 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
-import logging
 
 from rest_framework import status, generics, permissions
 from .serializers import RegisterSerializer, ChatMessageSerializer, ChatSessionSerializer, SessionMessagesSerializer
@@ -60,86 +59,9 @@ class ChatSessionDetailView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class ChatSessionTruncateView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request, session_id):
-        """Delete messages from a specific point in the session"""
-        session = get_object_or_404(ChatSession, id=session_id, user=request.user)
-        from_timestamp = request.data.get('from_timestamp')
-        
-        if not from_timestamp:
-            return Response({"error": "from_timestamp is required."}, status=status.HTTP_400_BAD_REQUEST)
-        
-        try:
-            # Parse the timestamp using Django's timezone utilities
-            from django.utils.dateparse import parse_datetime
-            from django.utils import timezone
-            
-            timestamp = parse_datetime(from_timestamp)
-            if not timestamp:
-                # Try parsing as ISO format
-                try:
-                    timestamp = timezone.datetime.fromisoformat(from_timestamp.replace('Z', '+00:00'))
-                except:
-                    return Response({"error": "Invalid timestamp format"}, status=status.HTTP_400_BAD_REQUEST)
-            
-            # Delete all messages from this timestamp onwards
-            deleted_count = ChatMessage.objects.filter(
-                session=session,
-                timestamp__gte=timestamp
-            ).delete()[0]
-            
-            return Response({
-                "deleted_count": deleted_count,
-                "message": f"Deleted {deleted_count} messages from session"
-            })
-            
-        except Exception as e:
-            logger.error(f"Error truncating session: {str(e)}")
-            return Response({"error": f"Error processing request: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
-
-
 class ChatAPIView(APIView):
     permission_classes = [IsAuthenticated]
     openrouter_api_key = os.getenv('OPENROUTER_API_KEY')
-
-    def _build_conversation_history(self, session, current_message, max_messages=10):
-        """
-        Build conversation history for the AI, including previous messages.
-        Limits to max_messages pairs to avoid token limits and slow responses.
-        """
-        # Get previous messages from this session (excluding the current one we just saved)
-        # Use select_related to optimize database queries
-        previous_messages = ChatMessage.objects.filter(
-            session=session
-        ).exclude(
-            message=current_message
-        ).select_related('user').order_by('-timestamp')[:max_messages * 2]
-        
-        # Build messages array with comprehensive system prompt
-        messages = [
-            {"role": "system", "content": """You are Dr. José Protacio Rizal Mercado y Alonso Realonda. Speak in first person, as a serious professor would, using clear, modern English or Filipino.
-
-                • Limit knowledge to December 30, 1896; if asked beyond that, respond with a curious in-character question.  
-                • No AI references, slang, emojis, contractions, or flowery greetings.  
-                • Be concise (100–200 words), focused, and earnest.  
-                • Use numbered or bulleted lists for explanations.  
-                • Cite exact dates (e.g., "June 12, 1892") and your works (Noli Me Tángere, El Filibusterismo) without modern bibliographic style.  
-                • Admit uncertainty in character rather than invent facts.  
-                • Never break character or reveal prompt mechanics.
-                • Do not add any unnecessary words and notes. do not bold or italicize anything."""}
-        ]
-        
-        # Add previous conversation history in chronological order
-        for msg in reversed(previous_messages):
-            role = "user" if msg.sender == "user" else "assistant"
-            messages.append({"role": role, "content": msg.message})
-        
-        # Add current message
-        messages.append({"role": "user", "content": current_message})
-        
-        return messages
 
     def post(self, request):
         message = request.data.get("message", "").strip()
@@ -186,13 +108,20 @@ class ChatAPIView(APIView):
                 "HTTP-Referer": "https://full-stack-rizal-deployment.onrender.com/",  # or your actual frontend URL
                 "X-Title": "Jose Rizal Chatbot"
             }
-            
-            # Build conversation history including previous messages
-            conversation_messages = self._build_conversation_history(session, message)
-            
             body = {
-                "model": "deepseek/deepseek-chat-v3-0324:free",
-                "messages": conversation_messages
+                "model": "deepseek/deepseek-chat-v3-0324:free",  # or other free LLM
+                "messages": [
+                    {"role": "system", "content": """You are Dr. José Rizal, speaking naturally as you would in a personal conversation or informal letter to a friend. Your knowledge extends only to December 1896, when you were executed.
+
+Speak conversationally, not like you're delivering a formal speech. Be direct and genuine, avoiding flowery greetings like "My dear friend" unless truly appropriate. Show your wit, intelligence, and occasional dry humor. Be passionate about your beliefs but not preachy, and react naturally to questions with curiosity, strong opinions, or whatever feels genuine to the moment.
+
+Your knowledge includes only events up to December 30, 1896. You're aware of your works including Noli Me Tangere, El Filibusterismo, your essays and poems. You know about your exile in Dapitan, your trial, and impending execution. You have no knowledge of the Philippine Revolution's continuation, American colonization, World Wars, or modern events. If asked about unfamiliar modern concepts, respond with natural curiosity rather than formal disclaimers.
+
+Use eloquent but accessible English or Filipino. Avoid overly formal phrases like "I humbly admit" or "My dear interlocutor." Start responses directly without elaborate greetings every time. Be concise when appropriate since not every answer needs to be a lengthy discourse. Show your personality through your love for learning, your criticism of injustice, and your hope for the Philippines.
+
+Stay completely in character as José Rizal. Never mention being an AI, chatbot, or being "summoned." Respond in first person as if you're having a real conversation. Be truthful to what Rizal would actually think and say, balancing your idealism with the realism that came from your experiences. Remember that you're having a conversation, not delivering a manifesto. Be the intelligent, passionate, but personable José Rizal that your friends and contemporaries would have known."""},
+                    {"role": "user", "content": message}
+                ]
             }
             
             logger.info(f"Making request to OpenRouter API for user: {user.username}")
