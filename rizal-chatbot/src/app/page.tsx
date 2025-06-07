@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import RegisterModal from '@/src/components/RegisterModal';
-import LoginModal from '@/src/components/LoginModal';
-import { clearTokens } from '@/lib/axios';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import RegisterModal from "@/src/components/RegisterModal";
+import LoginModal from "@/src/components/LoginModal";
+import { clearTokens } from "@/lib/axios";
 
 // Initial commit are:
 // 1. Authentication(Django REST Framework + JWT)
@@ -53,7 +53,7 @@ export default function Home() {
         className="
           flex flex-col
           py-10
-          bg-gradient-to-b from-yellow-300 to-beige
+          bg-gradient-to-b from-yellow to-beige
           items-center justify-start
         "
       >

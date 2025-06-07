@@ -135,6 +135,11 @@ export default function RegisterModal({ onSignIn, onSuccess }: any) {
           value={form.username}
           onChange={(e) => setForm({ ...form, username: e })}
           error={errors.username}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              register();
+            }
+          }}
         />
 
         <TextField
@@ -143,6 +148,11 @@ export default function RegisterModal({ onSignIn, onSuccess }: any) {
           value={form.email}
           onChange={(e) => setForm({ ...form, email: e })}
           error={errors.email}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              register();
+            }
+          }}
         />
 
         <TextField
@@ -151,6 +161,11 @@ export default function RegisterModal({ onSignIn, onSuccess }: any) {
           value={form.password}
           onChange={(e) => setForm({ ...form, password: e })}
           error={errors.password}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              register();
+            }
+          }}
         />
 
         <TextField
@@ -159,6 +174,11 @@ export default function RegisterModal({ onSignIn, onSuccess }: any) {
           value={form.confirmPassword}
           onChange={(e) => setForm({ ...form, confirmPassword: e })}
           error={errors.confirmPassword}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              register();
+            }
+          }}
         />
       </form>
 

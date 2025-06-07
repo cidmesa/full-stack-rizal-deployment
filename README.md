@@ -1,10 +1,5 @@
-<a name="readme-top"></a>
 
 <br />
-<div align="center">
-  <a href="https://github.com/jovenlab/full-stack-rizal">
-    <img src="" alt="Logo" width="80" height="80">
-  </a>
 
   <h3 align="center">RizalGPT: Converse with the National Hero</h3>
 
@@ -55,7 +50,22 @@ It uses AI to simulate Rizal's personality, knowledge, and wit, providing a uniq
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ---
+## User Interface
 
+### Signin Page
+<img src="readmeassets/signin.png" alt="Login Screenshot" width="500"/>
+
+### SignUp Page
+<img src="readmeassets/signup.png" alt="Login Screenshot" width="500"/>
+
+### Chat View
+<img src="readmeassets/chat1.png" alt="Chat first Screenshot" width="500"/>
+
+<img src="readmeassets/chat2.png" alt="Chat second View Screenshot" width="500"/>
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+---
 ### Built With
 
 * [![Django][Django]][Django-url]
@@ -122,6 +132,23 @@ Make sure you have Python and Django installed on your system. You can install D
    git remote set-url origin github_username/repo_name
    git remote -v # confirm the changes
    ```
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+---
+### API Key Setup
+
+To use RizalGPT, you need an API key from OpenRouter for LLM access.
+
+1. Go to [OpenRouter](https://openrouter.ai/?fbclid=IwY2xjawKxGh9leHRuA2FlbQIxMABicmlkETFXc0dXU3NVbExaR3hWa2cyAR6_zSCbgkagqG7WXpsVq2NvgMl02dzUIt6XsRujzb5OgMO8-f3kbRI-1swl1g_aem_N04F-toFDU32D5ju4Q4qBA) and sign up or log in.
+2. Generate an API key from your OpenRouter dashboard.
+3. In your backend directory, create a `.env` file and add:
+   ```env
+   OPENROUTER_API_KEY=your_api_key_here
+   ```
+4. Restart your backend server after updating the `.env` file.
+
+> For more details, see the [OpenRouter documentation](https://openrouter.ai/docs/quickstart).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

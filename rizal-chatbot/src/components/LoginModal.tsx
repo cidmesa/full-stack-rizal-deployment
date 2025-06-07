@@ -10,9 +10,9 @@ export default function LoginModal({ onSignUp, onLogin }: any) {
 
   const login = async () => {
     try {
-      const res = await API.post('token/', form);
-      localStorage.setItem('access_token', res.data.access);
-      localStorage.setItem('refresh_token', res.data.refresh);
+      const res = await API.post("token/", form);
+      localStorage.setItem("access_token", res.data.access);
+      localStorage.setItem("refresh_token", res.data.refresh);
       onLogin(); // proceed to chat page or dashboard
     } catch (err: any) {
       setError("Invalid credentials");
@@ -59,6 +59,11 @@ export default function LoginModal({ onSignUp, onLogin }: any) {
           placeholder="Username"
           value={form.username}
           onChange={(e) => setForm({ ...form, username: e })}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              login();
+            }
+          }}
         />
 
         <TextField
@@ -66,10 +71,15 @@ export default function LoginModal({ onSignUp, onLogin }: any) {
           value={form.password}
           type="password"
           onChange={(e) => setForm({ ...form, password: e })}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              login();
+            }
+          }}
         />
       </form>
 
-      <ActionButton label="Login" onClick={login} />
+      <ActionButton label="Sign In" onClick={login} />
 
       <br />
 
